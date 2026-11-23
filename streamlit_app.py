@@ -54,7 +54,7 @@ if not hmac.compare_digest(entered_password, app_password):
     st.stop()
 
 # No OpenAI client is created until the password has been checked.
-client = OpenAI(api_key=api_key)
+client = OpenAI(api_key=api_key, timeout=900.0)
 
 direction = st.selectbox(
     "Translation direction",
@@ -77,7 +77,7 @@ if st.button("Translate", type="primary"):
         with st.spinner("Searching the books for relevant terminology…"):
             # This request must finish before the translation request begins.
             # Search results are returned to the app but are not displayed.
-            retrieval = client.responses.create(
+            retrieval = client.with_options(timeout=900.0).responses.create(
                 model=MODEL,
                 instructions=(
                     "Search the provided vector store for terminology and "
@@ -103,6 +103,7 @@ if st.button("Translate", type="primary"):
                 text={"verbosity": "high"},
                 temperature=0,
                 max_output_tokens=32768,
+                service_tier="flex",
             )
 
         search_calls = [
@@ -131,7 +132,7 @@ if st.button("Translate", type="primary"):
             st.stop()
 
         with st.spinner("Translating…"):
-            translation = client.responses.create(
+            translation = client.with_options(timeout=900.0).responses.create(
                 model=MODEL,
                 instructions=(
                     f"Translate the user's dialogue from {source_language} "
@@ -155,6 +156,7 @@ if st.button("Translate", type="primary"):
                 text={"verbosity": "high"},
                 temperature=0,
                 max_output_tokens=32768,
+                service_tier="flex",
             )
 
         if not translation.output_text.strip():
