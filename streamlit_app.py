@@ -3,7 +3,7 @@ import hmac
 import streamlit as st
 from openai import OpenAI
 
-MODEL = "gpt-6-astra"
+MODEL = "gpt-6-sol"
 
 st.set_page_config(page_title="Dialogue Translator", page_icon="📖")
 st.title("📖 Dialogue Translator")
@@ -99,6 +99,10 @@ if st.button("Translate", type="primary"):
                 ],
                 tool_choice="required",
                 include=["file_search_call.results"],
+                reasoning={"effort": "none"},
+                text={"verbosity": "high"},
+                temperature=0,
+                max_output_tokens=32768,
             )
 
         search_calls = [
@@ -147,6 +151,10 @@ if st.button("Translate", type="primary"):
                     + "\n\nDialogue to translate:\n"
                     + dialogue
                 ),
+                reasoning={"effort": "none"},
+                text={"verbosity": "high"},
+                temperature=0,
+                max_output_tokens=32768,
             )
 
         if not translation.output_text.strip():
